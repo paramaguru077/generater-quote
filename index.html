@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Quotes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .quote {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .author {
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    #get-quotes-btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      margin-top: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    #in{
+      width: 300px;
+      height: 30px;
+      padding: 10px;
+      border: 1px solid yellowgreen;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Random Quotes</h1>
+  <input type="text" placeholder="Enter how many quote you needs" id="in">
+  <div id="quotes-container"></div>
+  <button id="get-quotes-btn">Get  Quotes</button>
+
+  <script>
+    const quotesContainer = document.getElementById('quotes-container');
+    const getQuotesBtn = document.getElementById('get-quotes-btn');
+    
+
+   
+
+    async function fetchQuotes() {
+      try {
+        const quotes = new Map();
+        const inputValue = document.getElementById("in").value;
+        try{
+          const numberValue = parseInt(inputValue);
+          if(isNaN(numberValue)){
+          alert("Input is not a valid number!");
+          }
+        while (quotes.size < numberValue) {
+          const response = await fetch('https://api.quotable.io/random');
+          const data = await response.json();
+          if (response.ok) {
+            quotes.set(data.content, data.author);
+          } else {
+            console.error('Failed to fetch quote:', response.statusText);
+          }
+        }
+      }
+      catch(err){
+        console.log(err);
+      }
+
+  
+        quotesContainer.innerHTML = '';
+
+        
+        quotes.forEach((author, quote) => {
+          const quoteElement = document.createElement('div');
+          quoteElement.classList.add('quote');
+          quoteElement.textContent = `${quote}`;
+          quotesContainer.appendChild(quoteElement);
+
+          const authorElement = document.createElement('div');
+          authorElement.classList.add('author');
+          authorElement.textContent = `- ${author}`;
+          quotesContainer.appendChild(authorElement);
+        });
+      } catch (error) {
+        console.error('Error fetching quotes:', error);
+        quotesContainer.innerHTML = 'Failed to fetch quotes';
+      }
+    }
+
+    getQuotesBtn.addEventListener('click', fetchQuotes);
+   
+  </script>
+</body>
+</html>
